@@ -1,5 +1,6 @@
-import useSignup from "../hooks/useSignup"
 import { useRef } from 'react';
+import { Link } from "react-router-dom";
+import useSignup from "../hooks/useSignup"
 
 function Signup() {
 
@@ -19,7 +20,7 @@ function Signup() {
   }
 
   return (
-    <div className="w-full flex flex-col items-center justify-center gap-3 mt-5">
+    <div className="w-full flex flex-col items-center justify-center gap-3 p-3 mt-5">
       <h2 className="text-2xl mb-7">Sign up</h2>
       <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
         <label className="flex flex-col gap-3">
@@ -37,7 +38,10 @@ function Signup() {
         <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-xs mb-4">
           Sign up
         </button>
-        {error && <p>error</p>}
+        <p className="text-xs">
+          Do you have an account ? &nbsp;<Link className="text-slate-600 hover:underline" to="/login" >Log in</Link>
+          {/* <button className="bg-slate-900 hover:bg-slate-700 text-white font-bold py-1 px-2 rounded text-xs">Log in</button> */}
+        </p>
       </form>
     </div>
   )

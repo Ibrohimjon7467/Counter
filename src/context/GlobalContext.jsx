@@ -6,12 +6,12 @@ const changeState = (state, action) => {
     const { type, payload } = action
 
     switch (type) {
-        case 'INCREMENT':
-            return state += 1
-        case 'DECREMENT':
-            return state -= 1
-        case 'ADD_NUMBER':
-            return state + payload
+        case 'LOGIN':
+            return { ...state, user: payload }
+        case 'LOGOUT':
+            return { ...state, user: null }
+        case 'IS_AUTH_CHANGE':
+            return { ...state, isAuthChange: true }
         default:
             return state
     }
@@ -19,9 +19,12 @@ const changeState = (state, action) => {
 
 export function GlobalContextProvider({ children }) {
 
-    const [counter, dispatch] = useReducer(changeState, 0)
+    const [state, dispatch] = useReducer(changeState, {
+        user: null,
+        isAuthChange: false,
+    })
 
-    return <GlobalContext.Provider value={{ counter, dispatch }}>
+    return <GlobalContext.Provider value={{ ...state, dispatch }}>
         {children}
     </GlobalContext.Provider>
-}
+}   
