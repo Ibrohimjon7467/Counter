@@ -1,32 +1,41 @@
-import { useState, useRef } from "react"
-import { useReducer } from "react"
-
-const changeState = (state, { type }) => {
-  switch (type) {
-    case 'INCREMENT':
-      return state += 1
-    case 'DECREMENT':
-      return state -= 1
-    default:
-      return state
-  }
-}
+import AddBooks from '../components/AddBooks';
+import { db } from '../firebase/firebase.Config';
+import { doc, deleteDoc } from 'firebase/firestore';
+import { useCollection } from './../hooks/useCollection';
+import { useGlobalContext } from './../hooks/useGlobalContext';
 
 function Home() {
 
-  const [count, setCount] = useState(0)
+  const { user } = useGlobalContext()
+  const { documents } = useCollection('books', ['userID', '==', user.uid])
 
-  const inputNumber = useRef()
-
-  const [state, dispatch] = useReducer(changeState, 0)
+  // delete docs
+  const handleDelete = async (id) => {
+    await deleteDoc(doc(db, 'books', id))
+  }
 
   return (
-    <div className='flex flex-col w-screen h-screen justify-center items-center'>
-      <h1 className=" text-8xl mb-[70px]">{state}</h1>
-      <div className='flex gap-4 mb-4'>
-        <button className="bg-slate-900 hover:bg-slate-700 text-white font-bold py-2 px-4 rounded" onClick={() => dispatch({ type: 'DECREMENT' })}>-</button>
-        <button className="bg-slate-900 hover:bg-slate-700 text-white font-bold py-2 px-4 rounded" onClick={() => dispatch({ type: 'INCREMENT' })}>+</button>
-      </div>
+    <div className="mt-6">
+      <AddBooks userId={user.uid} />
+      {documents && (
+        <>
+          <ul className="flex justify-around flex-wrap gap-y-5 gap-x-1">
+            {documents.map((doc) => {
+              return <li key={doc.id} className="flex flex-col w-[350px] rounded bg-slate-300">
+                <img className="w-full h-80 object-cover" src={doc.url} alt="" />
+                <div className="p-4">
+                  <h3 className="font-extrabold mb-2 capitalize">{doc.title}</h3>
+                  <p className="text-sm">Author:
+                    <em className="font-bold text-xs capitalize">{doc.author}</em>
+                  </p>
+                  <p className="text-sm">Pages: <span className="font-bold text-xs">{doc.page}</span></p>
+                </div>
+                <button onClick={() => handleDelete(doc.id)}>Delete</button>
+              </li>
+            })}
+          </ul>
+        </>
+      )}
     </div>
   )
 }
